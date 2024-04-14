@@ -27,7 +27,14 @@ DROP TABLE IF EXISTS aggregate;
 DROP TABLE IF EXISTS agg_blackhole;
 DROP TABLE IF EXISTS sensors;
 DROP TABLE IF EXISTS expeditions;
+DROP TABLE IF EXISTS imputables;
+
+-- clean up old triggers
 DROP TRIGGER IF EXISTS sens_sanitize;
+
+CREATE TABLE imputables (
+    name         VARCHAR(300)
+);
 
 CREATE TABLE expeditions (
     exped_id     VARCHAR(10),
