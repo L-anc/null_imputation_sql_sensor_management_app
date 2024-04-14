@@ -115,19 +115,24 @@ def example_query():
 # ----------------------------------------------------------------------
 # Command-Line Functionality
 # ----------------------------------------------------------------------
+
+# Creates a dataframe from a SQL table given the table's name
 def df_from_name(name):
     if name == 'aggregate':
         return aggregate_df
     
     return pd.read_sql(f'SELECT * FROM `{name}`', con = db_connection) 
 
+# Creates a table in the SQL server given a dataframe and name
 def df_to_table(df, name):
     df.to_sql(name, con = db_connection, if_exists='replace')
 
+# Returns a list of imputable tables
 def list_imputables():
     df = df_from_name('imputables')
     return df['name'].to_list()
 
+# Adds a table's name into the SQL server's imputables table given the name
 def imputables_add(name):
     try:
         mySql_insert_query = f"""
@@ -142,7 +147,7 @@ def imputables_add(name):
     except mysql.connector.Error as error:
         print("Failed to insert record into imputable table {}".format(error))
     
-
+# Converts a dataframe into a table while adding its name to imputables
 def df_to_imputable_table(df, name):
     df_to_table(df, name)
     imputables_add(name)
@@ -150,12 +155,15 @@ def df_to_imputable_table(df, name):
     print(f"New imputable table {name} created!")
     print()
 
+# Simple utility function that prints a list to the terminal with formatting
 def print_lst(lst):
     print("----------------")
     for x in lst:
         print(x)
     print("----------------")
 
+# Utility function that presents a list of options while checking inputs to 
+# determine that the selection was actually of the list.
 def lst_select(lst):
     print_lst(lst)
     name = input('Select one of the above: ')
@@ -169,6 +177,7 @@ def lst_select(lst):
     
     return name
 
+# Converts a dataframe into a sparse matrix of type lil
 def df_to_lil(df):
     """
     Converts a sparse pandas data frame to sparse scipy csr_matrix.
@@ -182,6 +191,7 @@ def df_to_lil(df):
 
     return arr.tocsr()
 
+# Imputation on only numeric columns by seperating categorical and numeric cols
 def categorical_impute(data, imp):
     categorical_columns = []
     numeric_columns = []
@@ -204,6 +214,8 @@ def categorical_impute(data, imp):
     #join the two masked dataframes back together
     return pd.concat([data_numeric, data_categorical], axis = 1)
 
+# Imputation on numeric and categorical columns by transforming categorical
+# dataframe into a one-hot(dummy) encoded dataframe
 def one_hot_impute(data, imp):
     categorical_columns = []
     numeric_columns = []
@@ -230,6 +242,7 @@ def one_hot_impute(data, imp):
     #join the two masked dataframes back together
     return pd.concat([data_numeric, data_categorical], axis = 1)
 
+# Function that streamlines imputation
 def impute(data, imp, one_hot):
     #Filter out station and datetime as they will cause problems
     st_dt = data[['station', 'date']]
@@ -242,6 +255,7 @@ def impute(data, imp, one_hot):
 
     return pd.concat([st_dt, new_data], axis = 1)
 
+# Function that outputs the null analysis of a given table in a readable manner
 def analysis_display(df, table_name):
     pd.set_option('display.max_rows', None)
     null_cnt = df.isnull().sum()
@@ -256,6 +270,8 @@ def analysis_display(df, table_name):
     print()
     pd.set_option('display.max_rows', 20)
 
+# Necessary initializations of global values to be used throughout the program
+# as well as the sqlalchemy.engine connection allowing pandas integration
 def ui_init():
     print("Interface Loading...")
     db_connection_str = f'mysql+pymysql://{USER}:{PASSWORD}@{HOST}/{DATABASE}'
@@ -271,6 +287,7 @@ def ui_init():
 
     show_options(aggregate_df, 'aggregate')
 
+# Shows options in the terminal UI
 def show_options(df, table_name):
     """
     Displays options users can choose in the application
@@ -469,6 +486,7 @@ def show_options(df, table_name):
         myresult = mycursor.fetchall()
         result_string_arr = []
 
+        # Necessary as mycursor outputs table names in a messy format
         print("----------------")
         for x in myresult:
             x = str(x)
