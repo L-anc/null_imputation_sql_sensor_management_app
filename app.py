@@ -31,7 +31,14 @@ import os
 
 # Debugging flag to print errors when debugging that shouldn't be visible
 # to an actual client. ***Set to False when done testing.***
-DEBUG = True
+DEBUG = False
+
+HOST = '' # host name
+USER = '' # SQL username
+PORT = '' # Find port in MAMP or MySQL Workbench GUI or with 
+          # SHOW VARIABLES WHERE variable_name LIKE 'port'. This may change!
+PASSWORD = '' # SQL password
+DATABASE = '' # replace this with your database name
 
 
 # ----------------------------------------------------------------------
@@ -44,13 +51,11 @@ def get_conn():
     """
     try:
         conn = mysql.connector.connect(
-          host='localhost',
-          user='user',
-          # Find port in MAMP or MySQL Workbench GUI or with
-          # SHOW VARIABLES WHERE variable_name LIKE 'port';
-          port='3306',  # this may change!
-          password='password',
-          database='database' # replace this with your database name
+          host=HOST,
+          user=USER,
+          port=PORT,
+          password=PASSWORD,
+          database=DATABASE 
         )
         print('Successfully connected.')
         return conn
@@ -253,7 +258,7 @@ def analysis_display(df, table_name):
 
 def ui_init():
     print("Interface Loading...")
-    db_connection_str = 'mysql+pymysql://user:password@localhost/database'
+    db_connection_str = f'mysql+pymysql://{USER}:{PASSWORD}@{HOST}/{DATABASE}'
 
     global db_connection
     db_connection = create_engine(db_connection_str)
