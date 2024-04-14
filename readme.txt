@@ -10,8 +10,9 @@ Setup Instructions:
 To setup the SQL server, simply log into mysql with --local-infile=1 and run 
 "source setup.sql" in an empty database.
 
-The python application only requires to be run and terminal functionalities will
-be made available and explained.
+To setup the python application, fill out HOST, USER, PORT, PASSWORD, 
+and DATABASE variables near the top of the program with the appropriate SQL
+credentials and run.
 
 Written Files:
 The export functionality of the terminal will convert the currently selected
