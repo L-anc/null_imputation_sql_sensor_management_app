@@ -45,12 +45,12 @@ def get_conn():
     try:
         conn = mysql.connector.connect(
           host='localhost',
-          user='root',
+          user='user',
           # Find port in MAMP or MySQL Workbench GUI or with
           # SHOW VARIABLES WHERE variable_name LIKE 'port';
           port='3306',  # this may change!
-          password='SOldado1600##',
-          database='FINAL' # replace this with your database name
+          password='password',
+          database='database' # replace this with your database name
         )
         print('Successfully connected.')
         return conn
@@ -253,7 +253,7 @@ def analysis_display(df, table_name):
 
 def ui_init():
     print("Interface Loading...")
-    db_connection_str = 'mysql+pymysql://root:SOldado1600##@localhost/FINAL'
+    db_connection_str = 'mysql+pymysql://user:password@localhost/database'
 
     global db_connection
     db_connection = create_engine(db_connection_str)

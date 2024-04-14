@@ -15,7 +15,7 @@ be made available and explained.
 
 Written Files:
 The export functionality of the terminal will convert the currently selected
-mysql table
+mysql table into a CSV stored within the csv_output folder
 
 
 
