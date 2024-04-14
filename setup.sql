@@ -32,16 +32,24 @@ DROP TABLE IF EXISTS imputables;
 -- clean up old triggers
 DROP TRIGGER IF EXISTS sens_sanitize;
 
+-- Table storing the names of tables available for imputation by the application
+-- Necessary as certain tables (already imputed ones for example) should not be
+-- imputable.
 CREATE TABLE imputables (
     name         VARCHAR(300)
 );
 
+-- Table storing expeditions. Can be used to find what sensors where deployed on
+-- what expeditions
 CREATE TABLE expeditions (
+    -- unique id for expedition
     exped_id     VARCHAR(10),
     cost         NUMERIC(10, 2) NULL,
     PRIMARY KEY (exped_id)
 );
 
+-- Table of sensors. Can use foreign key to determine which expedition they were
+-- deployed on.
 CREATE TABLE sensors (
     -- unique serial number for individual sensor
     station       VARCHAR(10),
@@ -49,6 +57,8 @@ CREATE TABLE sensors (
     exped_id      VARCHAR(10),
     -- Name of sensor producing company
     company       VARCHAR(50)   NOT NULL,
+    -- Date after which the sensor is decomissioned and read data is subject to
+    -- errors and should not be added to aggregate
     eol_date      DATETIME      NOT NULL,
     PRIMARY KEY (station),
     FOREIGN KEY (exped_id) REFERENCES expeditions(exped_id)
@@ -126,6 +136,8 @@ CREATE TABLE aggregate (
     ind_for_precip  TINYINT
 );
 
+-- Blackhole variant of aggregate used to filter data from sensors past EOL date
+-- All sensor readings should be inserted into this table instead of aggregate
 CREATE TABLE agg_blackhole (
     -- -- Numeric identifier for a specific dataset
     -- db              TINYINT     NOT NULL,
@@ -291,9 +303,6 @@ INSERT INTO sensors VALUES
     ('PXOC1', 'WP778', 'VIA', '2024-01-17T13:24:00');
 
 -- Load the data from the 3 csv databases into aggregate
-
--- LOAD DATA LOCAL INFILE 'test.csv' INTO TABLE aggregate
--- FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
 
 LOAD DATA LOCAL INFILE '40_-120_30_-110.csv' INTO TABLE agg_blackhole
 FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
